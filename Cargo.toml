@@ -10,6 +10,10 @@ edition = "2018"
 clap = { git = "https://github.com/clap-rs/clap/" }
 term_grid = "0.1.7"
 term_size = "0.3.1"
+rand = "0.7.3"
+nom = "5.1.1"
+textwrap = "0.11"
+unicode-width = "0.1.5"
 
 [dev-dependencies]
 assert_cmd = "0.12.0"
