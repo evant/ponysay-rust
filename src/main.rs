@@ -16,6 +16,7 @@ use rand::prelude::{IteratorRandom, SliceRandom};
 use term_grid::{Direction, Filling, Grid, GridOptions};
 use textwrap::{fill, wrap};
 use unicode_width::UnicodeWidthStr;
+use std::io::Read;
 
 #[derive(Clap)]
 #[clap(version = "1.0", author = "Pixel Light")]
@@ -30,19 +31,40 @@ struct Opts {
 fn main() -> io::Result<()> {
     let opts = Opts::parse();
 
-    let pony_dir = Path::new("/usr/share/ponysay/ponies/");
-    let pony_quote_dir = Path::new("/usr/share/ponysay/quotes");
+    let pony_dir = Path::new("/usr/local/share/ponysay/ponies/");
+    let pony_quote_dir = Path::new("/usr/local/share/ponysay/quotes");
+
 
     if opts.list {
         print_pony_list(pony_dir)?;
     } else if opts.quote {
-        print_pony_quote(pony_dir, pony_quote_dir)?;
+        print_pony_random_quote(pony_dir, pony_quote_dir)?;
+    } else {
+        // only check stdin if being piped to
+        if atty::isnt(atty::Stream::Stdin) {
+            let mut stdin_quote = String::new();
+            io::stdin().read_to_string(&mut stdin_quote)?;
+            print_random_pony(pony_dir, stdin_quote)?;
+        }
     }
 
     Ok(())
 }
 
-fn print_pony_quote(pony_dir: &Path, pony_quote_dir: &Path) -> io::Result<()> {
+fn print_random_pony(pony_dir: &Path, pony_quote: String) -> io::Result<()> {
+    let rng = &mut rand::thread_rng();
+
+    let pony_paths: Vec<_> = paths(pony_dir)?.collect();
+    let pony_path = pony_paths.choose(rng).unwrap();
+
+    let pony = fs::read_to_string(pony_path)?;
+
+    print_pony(pony, pony_quote);
+
+    Ok(())
+}
+
+fn print_pony_random_quote(pony_dir: &Path, pony_quote_dir: &Path) -> io::Result<()> {
     let rng = &mut rand::thread_rng();
 
     let pony_quote_paths: Vec<_> = paths(pony_quote_dir)?.collect();
@@ -56,14 +78,19 @@ fn print_pony_quote(pony_dir: &Path, pony_quote_dir: &Path) -> io::Result<()> {
     let pony_path = paths(pony_dir)?
         .find(|path| to_pony_name(path).map(|n| n == pony_name).unwrap_or(false))
         .unwrap();
+
     let pony_quote = fs::read_to_string(&pony_quote_path)?;
-
     let pony = fs::read_to_string(pony_path)?;
-    let (_, (metadata, pony)) = parse_pony(create_balloon(&pony_quote), &pony).unwrap();
 
-    println!("{}", pony);
+    print_pony(pony, pony_quote);
 
     Ok(())
+}
+
+fn print_pony(pony: String, pony_quote: String) {
+    let (_, (_metadata, pony)) = parse_pony(create_balloon(&pony_quote), &pony).unwrap();
+
+    println!("{}", pony);
 }
 
 fn parse_pony(quote: String, pony: &str) -> nom::IResult<&str, (Vec<(&str, &str)>, String)> {
