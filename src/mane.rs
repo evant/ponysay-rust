@@ -1,7 +1,7 @@
 use std::{fs, io};
-use std::borrow::Cow;
-use std::error::Error;
-use std::ffi::{OsStr, OsString};
+
+
+
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
@@ -9,8 +9,8 @@ use clap::Clap;
 use rand::prelude::{IteratorRandom, SliceRandom};
 use rand::Rng;
 use term_grid::{Direction, Filling, Grid, GridOptions};
-use textwrap::{fill, wrap};
-use unicode_width::UnicodeWidthStr;
+
+
 
 use crate::pony::Pony;
 
@@ -49,7 +49,7 @@ fn main() {
             if let Some(quote_constraint) = constraint {
                 constraints.push(quote_constraint);
             }
-            let mut possible_ponies = constrain_ponies(pony_dir, constraints);
+            let possible_ponies = constrain_ponies(pony_dir, constraints);
             let mut pony = select_pony(possible_ponies);
 
             println!("{}", pony.display(pony_quote));
@@ -83,7 +83,7 @@ fn calculate_quote(opts: &Opts, pony_quote_dir: &Path) -> Option<(String, Option
     }
 }
 
-fn calculate_constraints(opts: &Opts) -> Vec<Constraint> {
+fn calculate_constraints(_opts: &Opts) -> Vec<Constraint> {
     //TODO
     vec![]
 }
@@ -101,7 +101,7 @@ fn select_pony(ponies: Vec<Pony>) -> Pony {
 }
 
 fn constrain_ponies(pony_dir: &Path, constraints: Vec<Constraint>) -> Vec<Pony> {
-    let mut paths = paths(pony_dir)
+    let paths = paths(pony_dir)
         .filter_map(|path| Pony::new(path));
     if constraints.is_empty() {
         paths.collect()

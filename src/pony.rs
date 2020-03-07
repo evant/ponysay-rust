@@ -1,4 +1,3 @@
-use std::borrow::Cow;
 use std::cmp::Ord;
 use std::convert::Into;
 use std::ffi::OsStr;
@@ -6,14 +5,11 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use nom::branch::alt;
-use nom::bytes::complete::{is_a, is_not, tag, take_until, take_while};
-use nom::character::complete::anychar;
-use nom::combinator::{all_consuming, map, not, recognize};
-use nom::error::ParseError;
-use nom::InputLength;
+use nom::bytes::complete::{is_a, is_not, tag};
+use nom::combinator::map;
 use nom::lib::std::cmp::Ordering;
 use nom::multi::many0;
-use nom::sequence::{delimited, pair, separated_pair, terminated, tuple};
+use nom::sequence::{delimited, pair, separated_pair, terminated};
 use textwrap::wrap;
 use unicode_width::UnicodeWidthStr;
 
