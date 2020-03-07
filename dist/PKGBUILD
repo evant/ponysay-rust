@@ -34,6 +34,6 @@ build() {
 
 package() {
 	cd "$_pkgname"
-	make install DESTDIR="$pkgdir"
+	make install PREFIX="/usr" DESTDIR="$pkgdir"
 }
 
