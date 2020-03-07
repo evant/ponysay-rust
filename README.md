@@ -18,12 +18,12 @@ make
 sudo make install
 ```
 
-This will install to `/usr/bin/ponysay` by default. And place the pony files in `/usr/share/ponysay/`. 
+This will install to `/usr/local/bin/ponysay` by default. And place the pony files in `/usr/local/share/ponysay/`. 
 If you want to change the prefix, you can do:
 
 ```
-make PREFIX=/usr/local
-sudo make install PREFIX=/usr/local
+make PREFIX=/my/prefix/dir
+sudo make install PREFIX=/my/prefix/dir
 ```
 
 ## Supported features

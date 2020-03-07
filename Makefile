@@ -1,4 +1,4 @@
-PREFIX = /usr
+PREFIX = /usr/local
 
 all: download-ponies target/release/ponysay
 
