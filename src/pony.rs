@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
-use nom::combinator::map;
+use nom::combinator::{map, opt};
 use nom::lib::std::cmp::Ordering;
 use nom::multi::many0;
 use nom::sequence::{delimited, pair, separated_pair, terminated};
@@ -65,7 +65,7 @@ fn parse_metadata(pony: &str) -> nom::IResult<&str, Vec<(&str, &str)>> {
 }
 
 fn parse_metadata_line(pony: &str) -> nom::IResult<&str, (&str, &str)> {
-    terminated(separated_pair(is_not(":"), tag(":"), is_not("\n")), tag("\n"))(pony)
+    terminated(separated_pair(is_not(":\n"), tag(":"), is_not("\n")), tag("\n"))(pony)
 }
 
 fn parse_pony_body(pony: &str, quote: String) -> nom::IResult<&str, String> {
@@ -147,5 +147,27 @@ impl Eq for Pony {}
 impl PartialEq for Pony {
     fn eq(&self, other: &Self) -> bool {
         self.path.eq(&other.path)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::fs;
+    use std::path::Path;
+
+    use crate::pony::Pony;
+
+    #[test]
+    fn parse_all_ponies() {
+        let pony_dir = Path::new("share/ponysay/ponies");
+        let ponies = fs::read_dir(pony_dir)
+            .expect(&format!("unable to read {}", pony_dir.display()))
+            .into_iter()
+            .filter_map(|entry| entry.ok().map(|e| e.path()))
+            .map(|path| Pony::new(path).unwrap());
+
+        for mut pony in ponies {
+            pony.display("Hi".to_string());
+        }
     }
 }
