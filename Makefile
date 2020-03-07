@@ -26,3 +26,7 @@ install: all
 	cp -R share/ponysay/ponies/*.* $(DESTDIR)$(PREFIX)/share/ponysay/ponies/
 	cp -R share/ponysay/quotes/*.* $(DESTDIR)$(PREFIX)/share/ponysay/quotes/
 	install -s target/release/ponysay $(DESTDIR)$(PREFIX)/bin/ponysay
+
+.PHONY: check
+check: download-ponies
+	cargo test
