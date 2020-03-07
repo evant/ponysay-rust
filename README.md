@@ -16,7 +16,7 @@ If you want to change the prefix, you can do:
 
 ```
 make PREFIX=/usr/local
-sudo make install DESTDIR=/usr/local
+sudo make install PREFIX=/usr/local
 ```
 
 ## Supported features
