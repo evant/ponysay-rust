@@ -11,11 +11,13 @@ use nom::character::complete::anychar;
 use nom::combinator::{all_consuming, map, not, recognize};
 use nom::error::ParseError;
 use nom::InputLength;
+use nom::lib::std::cmp::Ordering;
 use nom::multi::many0;
 use nom::sequence::{delimited, pair, separated_pair, terminated, tuple};
 use textwrap::wrap;
 use unicode_width::UnicodeWidthStr;
 
+#[derive(Debug)]
 pub struct Pony {
     path: PathBuf,
     name: String,
@@ -34,6 +36,8 @@ impl Pony {
             Pony { path, name, pony: None }
         })
     }
+
+    pub fn path(&self) -> &Path { &self.path }
 
     pub fn name(&self) -> &str { &self.name }
 
@@ -128,4 +132,24 @@ fn create_balloon(quote: &str) -> String {
     }
     output.push(' ');
     return output;
+}
+
+impl Ord for Pony {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.name.cmp(&other.name)
+    }
+}
+
+impl PartialOrd for Pony {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.name.partial_cmp(&other.name)
+    }
+}
+
+impl Eq for Pony {}
+
+impl PartialEq for Pony {
+    fn eq(&self, other: &Self) -> bool {
+        self.path.eq(&other.path)
+    }
 }
