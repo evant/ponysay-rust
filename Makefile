@@ -20,6 +20,9 @@ download-ponies:
 
 .PHONY: install
 install: all
-	install -D -t $(DESTDIR)$(PREFIX)/share/ponysay/ponies share/ponysay/ponies/*.*
-	install -D -t $(DESTDIR)$(PREFIX)/share/ponysay/quotes share/ponysay/quotes/*.*
-	install -Ds target/release/ponysay $(DESTDIR)$(PREFIX)/bin/ponysay
+	mkdir -p $(DESTDIR)$(PREFIX)/share/ponysay/ponies
+	mkdir -p $(DESTDIR)$(PREFIX)/share/ponysay/quotes
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	cp -R share/ponysay/ponies/*.* $(DESTDIR)$(PREFIX)/share/ponysay/ponies/
+	cp -R share/ponysay/quotes/*.* $(DESTDIR)$(PREFIX)/share/ponysay/quotes/
+	install -s target/release/ponysay $(DESTDIR)$(PREFIX)/bin/ponysay
