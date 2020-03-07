@@ -1,6 +1,7 @@
 use std::{fs, io};
 use std::borrow::Cow;
 use std::ffi::{OsStr, OsString};
+use std::io::Read;
 use std::path::{Path, PathBuf};
 
 use clap::Clap;
@@ -16,7 +17,8 @@ use rand::prelude::{IteratorRandom, SliceRandom};
 use term_grid::{Direction, Filling, Grid, GridOptions};
 use textwrap::{fill, wrap};
 use unicode_width::UnicodeWidthStr;
-use std::io::Read;
+
+const PREFIX: Option<&str> = option_env!("PREFIX");
 
 #[derive(Clap)]
 #[clap(version = "1.0", author = "Pixel Light")]
@@ -31,9 +33,12 @@ struct Opts {
 fn main() -> io::Result<()> {
     let opts = Opts::parse();
 
-    let pony_dir = Path::new("/usr/local/share/ponysay/ponies/");
-    let pony_quote_dir = Path::new("/usr/local/share/ponysay/quotes");
+    let prefix = PREFIX.unwrap_or(".");
 
+    let pony_dir = &Path::new(prefix).join("share/ponysay/ponies");
+    let pony_quote_dir = &Path::new(prefix).join("share/ponysay/quotes");
+
+    println!("pony_quote_dir {:?}", pony_quote_dir);
 
     if opts.list {
         print_pony_list(pony_dir)?;
