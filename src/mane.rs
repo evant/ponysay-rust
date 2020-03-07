@@ -38,8 +38,6 @@ fn main() -> io::Result<()> {
     let pony_dir = &Path::new(prefix).join("share/ponysay/ponies");
     let pony_quote_dir = &Path::new(prefix).join("share/ponysay/quotes");
 
-    println!("pony_quote_dir {:?}", pony_quote_dir);
-
     if opts.list {
         print_pony_list(pony_dir)?;
     } else if opts.quote {
