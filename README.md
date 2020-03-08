@@ -32,4 +32,5 @@ sudo make install PREFIX=/my/prefix/dir
 ponysay -l
 ponysay -q
 echo 'Hello, Equestria!' | ponysay
+ponysay -f pinkie -- 'Lets have a party!'
 ```
