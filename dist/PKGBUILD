@@ -2,7 +2,7 @@
 # Maintainer: Pixel Light <evan@tatarka.me>
 pkgname=ponysay-rust-git
 _pkgname=ponysay
-pkgver=v0.1+5
+pkgver=v0.1+0
 pkgrel=1
 pkgdesc="Bare-bones implementation of ponysay in rust"
 arch=("any")

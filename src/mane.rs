@@ -1,16 +1,14 @@
 use std::{fs, io};
-
-
-
+use std::fs::read_to_string;
 use std::io::Read;
 use std::path::{Path, PathBuf};
+use std::process::exit;
 
 use clap::Clap;
 use rand::prelude::{IteratorRandom, SliceRandom};
 use rand::Rng;
 use term_grid::{Direction, Filling, Grid, GridOptions};
-
-
+use textwrap::fill;
 
 use crate::pony::Pony;
 
@@ -24,8 +22,14 @@ struct Opts {
     /// List pony names.
     #[clap(short, long, exclusive = true)]
     list: bool,
+    /// Pick a random quote.
     #[clap(short, long, exclusive = true)]
     quote: bool,
+    /// Pick a specific name or file.
+    #[clap(short, long, alias = "pony", multiple = true)]
+    file: Vec<String>,
+    #[clap(name = "QUOTE")]
+    input: Option<String>,
 }
 
 enum Constraint {
@@ -72,8 +76,11 @@ fn calculate_quote(opts: &Opts, pony_quote_dir: &Path) -> Option<(String, Option
         let pony_quote = fs::read_to_string(pony_quote_path).expect(&format!("unable to read {}", pony_quote_path.display()));
         Some((pony_quote, Some(Constraint::Name(pony_name))))
     } else {
-        // only check stdin if being piped to
-        if atty::isnt(atty::Stream::Stdin) {
+        println!("input: {:?}", opts.input);
+        if let Some(pony_quote) = &opts.input {
+            Some((pony_quote.to_string(), None))
+        } else if atty::isnt(atty::Stream::Stdin) {
+            // only check stdin if being piped to
             let mut stdin_quote = String::new();
             io::stdin().read_to_string(&mut stdin_quote).unwrap();
             Some((stdin_quote, None))
@@ -83,14 +90,21 @@ fn calculate_quote(opts: &Opts, pony_quote_dir: &Path) -> Option<(String, Option
     }
 }
 
-fn calculate_constraints(_opts: &Opts) -> Vec<Constraint> {
-    //TODO
-    vec![]
+fn calculate_constraints(opts: &Opts) -> Vec<Constraint> {
+    opts.file.iter().map(|file_or_name| {
+        if file_or_name.ends_with(".pony") {
+            // assume file
+            Constraint::Path(Path::new(file_or_name).to_path_buf())
+        } else {
+            Constraint::Name(file_or_name.clone())
+        }
+    }).collect()
 }
 
 fn select_pony(ponies: Vec<Pony>) -> Pony {
     if ponies.is_empty() {
-        panic!("Couldn't find anypony");
+        eprintln!("Couldn't find anypony");
+        exit(1)
     } else if ponies.len() == 1 {
         ponies.into_iter().nth(0).unwrap()
     } else {
@@ -106,14 +120,27 @@ fn constrain_ponies(pony_dir: &Path, constraints: Vec<Constraint>) -> Vec<Pony> 
     if constraints.is_empty() {
         paths.collect()
     } else {
-        paths.filter(|pony| constraints.iter().any(|constraint| matches(pony, constraint))).collect()
+        let mut result = vec![];
+        for constraint in &constraints {
+            match constraint {
+                Constraint::Path(path) => {
+                    if let Some(pony) = Pony::new(path) {
+                        result.push(pony)
+                    }
+                }
+                _ => {}
+            }
+        }
+        result.extend(paths.filter(|pony| constraints.iter().any(|constraint| matches(pony, constraint))));
+
+        result
     }
 }
 
 fn matches(pony: &Pony, constraint: &Constraint) -> bool {
     match constraint {
-        Constraint::Path(path) => { pony.path() == path }
         Constraint::Name(name) => { pony.name() == name }
+        _ => false
     }
 }
 
