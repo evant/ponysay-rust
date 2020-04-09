@@ -76,7 +76,6 @@ fn calculate_quote(opts: &Opts, pony_quote_dir: &Path) -> Option<(String, Option
         let pony_quote = fs::read_to_string(pony_quote_path).expect(&format!("unable to read {}", pony_quote_path.display()));
         Some((pony_quote, Some(Constraint::Name(pony_name))))
     } else {
-        println!("input: {:?}", opts.input);
         if let Some(pony_quote) = &opts.input {
             Some((pony_quote.to_string(), None))
         } else if atty::isnt(atty::Stream::Stdin) {
