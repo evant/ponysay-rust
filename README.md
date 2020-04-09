@@ -16,6 +16,12 @@ brew tap evant/ponysay-rust
 brew install ponysay-rust
 ```
 
+### AUR
+
+```
+pacaur -S ponysay-rust-git
+```
+
 ### From Source
 
 Requires rust to build, you can obtain it with [rustup](https://rustup.rs/).
