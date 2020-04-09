@@ -8,9 +8,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build
-      run: cargo build --verbose
+      run: make
     - name: Run tests
-      run: cargo test --verbose
+      run: make check
 
   build-macos:
     runs-on: macOS-latest
@@ -19,6 +19,6 @@ jobs:
     - name: Install rust
       run: brew install rust
     - name: Build
-      run: cargo build --verbose
+      run: make
     - name: Run tests
-      run: cargo test --verbose
+      run: make check
