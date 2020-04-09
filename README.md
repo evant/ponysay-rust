@@ -9,6 +9,15 @@ the parts I use in rust.
 
 ## Install
 
+### Homebrew
+
+```
+brew tap evant/ponysay-rust
+brew install ponysay-rust
+```
+
+### From Source
+
 Requires rust to build, you can obtain it with [rustup](https://rustup.rs/).
 
 ```
